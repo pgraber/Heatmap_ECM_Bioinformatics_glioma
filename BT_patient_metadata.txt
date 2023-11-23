@@ -1,0 +1,221 @@
+Patient.ID	Diagnosis	FinalDiagnosis	Category
+RA-002-LMU-30226	HGG	High grade glioma, hemispheric	BT
+RA-006-STA-28528	EPD	Ependymoma	BT
+RA-008-IBI-30437	MB	Medulloblastoma	BT
+RA-010-AWE-30588	DMG	DMG - H3 K27M (thalamus)	BT
+RA-021-HRE-34122	MB	Medulloblastoma	BT
+RA-022-DWI-31482	MB	Medulloblastoma	BT
+RA-024-AJA-31582	HGG	High grade glioma, hemispheric	BT
+RA-025-IDO-164590	MB	Medulloblastoma	BT
+RA-028-GKH-167757	HGG	High grade glioma, hemispheric	BT
+RA-030-MDU-168602	HGG	High grade glioma, hemispheric	BT
+RA-031-SBA-169491	HGG	High grade glioma, hemispheric	BT
+RA-032-ZDI-169765	DMG	DMG - H3 K27M (spinal cord)	BT
+RA-033-MMU-172592	DMG	DMG - H3 K27M (brainstem)	BT
+RA-034-DHS-174216	CNS other	CNS other, choroid plexus carcinoma	BT
+RA-037-CDI-175440	DMG	DMG - H3 K27M (thalamus)	BT
+RA-038-AVA-175631	DMG	DMG - H3 K27M (brainstem)	BT
+RA-043-FMA-178339	MB	Medulloblastoma	BT
+RA-044-FWC-235152	DMG	DMG - H3 K27M (brainstem)	BT
+RA-048-LAJ-237803	DMG	DMG - H3 K27M (brainstem)	BT
+RA-052-SSM-239954	DMG	DMG - H3 K27M (brainstem)	BT
+RA-056-LHA-241252	HGG	High grade glioma, hemispheric	BT
+WE-002-CGR-172776	DMG	DMG - H3 K27M (brainstem)	BT
+WE-008-DSI-236863	HGG	High grade glioma, midline brainstem	BT
+WE-011-DSU-244973	DMG	DMG - H3 K27M (brainstem)	BT
+P000101	DMG	DMG - H3 K27M (brainstem)	BT
+P000102	DMG	DMG - H3 K27M (brainstem)	BT
+P000106	CNS embryonal	CNS embryonal tumour, HGNET BCOR alteration	BT
+P000202	MB	Medulloblastoma	BT
+P000208	DMG	DMG - H3 K27M (brainstem)	BT
+P000302	HGG	High grade glioma, midline spinal cord	BT
+P000305-251503	HGG	High grade glioma, hemispheric	BT
+P000307	DMG	DMG - H3 K27M (brainstem)	BT
+P000404	HGG	High grade glioma, hemispheric	BT
+P000504	HGG	High grade glioma, hemispheric	BT
+P000604	HGG	High grade glioma, hemispheric	BT
+P000606	DMG	DMG - H3 K27M (suprasellar)	BT
+P000608	CNS other	CNS other, meningioma	BT
+P000703	CNS other	CNS other, choroid plexus carcinoma	BT
+P000706	EPD	Ependymoma	BT
+P000801	MB	Medulloblastoma	BT
+P000804	HGG	High grade glioma, hemispheric	BT
+P000902	DMG	DMG - H3 K27M (brainstem)	BT
+P000903	MB	Medulloblastoma	BT
+P000904	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P001002	HGG	High grade glioma, midline posterior fossa	BT
+P001007	CNS embryonal	CNS embryonal tumour, ETMR	BT
+P001102	Glioma other	Glioma other, low grade glioma	BT
+P001202	CNS embryonal	CNS embryonal tumour	BT
+P001301	Glioma other	Glioma other, ganglioglioma anaplastic	BT
+P001302	Glioma other	Glioma other, low grade glioma	BT
+P001304	HGG	High grade glioma, hemispheric	BT
+P001307	EPD	Ependymoma	BT
+P001401	DMG	DMG - H3 K27M (brainstem)	BT
+P001502	DMG	DMG - H3 K27M (thalamus)	BT
+P001602	Glioma other	Glioma other, ganglioglioma metastatic	BT
+P001701	HGG	High grade glioma, midline brainstem	BT
+P001802	HGG	High grade glioma, hemispheric	BT
+P002306	DMG	DMG - H3 K27M (brainstem)	BT
+P003101	HGG	High grade glioma, hemispheric	BT
+P001404	HGG	High grade glioma, hemispheric	BT
+P002506	HGG	High grade glioma, midline thalamic	BT
+P001003	CNS embryonal	CNS embryonal tumour, ETMR	BT
+P000605	HGG	High grade glioma, midline thalamic	BT
+P002302	EPD	Ependymoma	BT
+P003601	Glioma other	Glioma other, low grade glioma, diffuse astrocytoma IDH1 mut	BT
+P001904-268846	HGG	High grade glioma, midline thalamic	BT
+P004001-268467	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P004001-268560	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P004201-269359	CNS other	CNS other, pineoblastoma	BT
+P004401-270614	DMG	DMG - H3 K27M (brainstem)	BT
+P001105-271530	EPD	Ependymoma	BT
+P002404-271735	HGG	High grade glioma, hemispheric	BT
+P002802-270846	HGG	High grade glioma, hemispheric	BT
+P004301-270831	DMG	DMG - H3 K27M (thalamus)	BT
+P001205-274088	CNS embryonal	CNS embryonal tumour, CNS neuroblastoma	BT
+P002904-273913	DMG	DMG - H3 K27M (brainstem)	BT
+P003202-273784	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P003302-274819	DMG	DMG - H3 K27M (brainstem)	BT
+P003502-275267	CNS other	CNS other, choroid plexus carcinoma	BT
+P003106-274807	EPD	Ependymoma	BT
+P003204-276307	HGG	High grade glioma, hemispheric	BT
+P003404-276310	EPD	Ependymoma	BT
+P003504-276910	HGG	High grade glioma, midline thalamic	BT
+P001405-277029	Glioma other	Glioma other, low grade glioma	BT
+P003902-277744	CNS other	CNS other, pineoblastoma	BT
+P005401-277060	DMG	DMG - H3 K27M (thalamus)	BT
+P003704-277451	DMG	DMG - H3 K27M (brainstem)	BT
+P004402-279901	CNS embryonal	CNS embryonal tumour, ETMR	BT
+P001505-277736	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P003904-279449	HGG	High grade glioma, midline thalamic	BT
+P004801-277602	Glioma other	Glioma other, ganglioglioma	BT
+P004104-280143	HGG	High grade glioma, midline thalamic	BT
+P001705-280141	Glioma other	Glioma other, ganglioneuronal anaplastic	BT
+P004204-280660	HGG	High grade glioma, cerebellar	BT
+P004006-282222	DMG	DMG - H3 K27M (brainstem)	BT
+P004206-282906	HGG	High grade glioma, midline thalamic	BT
+P001805-283771	DMG	DMG, H3 K27M (thalamus)	BT
+P005801-282911	CNS other	CNS other, pineoblastoma	BT
+P004604-284987	Glioma other	Glioma other, ganglioglioma	BT
+P004802-284986	CNS embryonal	CNS embryonal tumour, ETMR	BT
+P005901-283677	HGG	High grade glioma, left basal ganglia	BT
+P001605-285608	CNS embryonal	CNS embryonal tumour	BT
+P004406-286146	DMG	DMG - H3 K27M (brainstem)	BT
+P004704-285606	CNS other	Glioma other, low grade glioma	BT
+P006201-287071	Glioma other	Glioma other, low grade glioma	BT
+P004606-287208	DMG	DMG, H3 K27M (brainstem)	BT
+P000908-288144	CNS embryonal	CNS embryonal tumour	BT
+P006501-288992	DMG	DMG, H3 K27M (thalamus)	BT
+P002607-287123	HGG	High grade glioma, right temporal	BT
+P005302-289217	HGG	High grade glioma, hemispheric	BT
+P005402-289261	DMG	DMG, H3 K27M (thalamus)	BT
+P005502-290329	MB	Medulloblastoma	BT
+P005102-290188	Glioma other	Glioma other, low grade glioma	BT
+P006701-291577	MB	Medulloblastoma	BT
+P005602-290690	CNS embryonal	CNS embryonal tumour	BT
+P002205-292088	DMG	DMG, H3 K27M (brainstem)	BT
+P005802-292101	CNS embryonal	CNS embryonal tumour, primary diffuse leptomeningeal PNET	BT
+P002305-293498	EPD	Ependymoma	BT
+P002405-293496	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P003007-293109	Glioma other	Glioma other, anaplastic pleomorphic xanthoastrocytoma	BT
+P005306-293108	DMG	DMG, H3 K27M (brainstem)	BT
+P005702-294414	MB	Medulloblastoma	BT
+P005206-294365	HGG	High grade glioma, hemispheric	BT
+P005406-294364	EPD	Ependymoma	BT
+P002505-294463	EPD	Ependymoma	BT
+P002605-295086	EPD	Ependymoma	BT
+P005504-294490	MB	Medulloblastoma	BT
+P006102-296502	DMG	DMG, H3 K27M (brainstem)	BT
+P007401-297206	HGG	High grade glioma, hemispheric	BT
+P002805-297243	CNS embryonal	CNS embryonal tumour, CNS neuroblastoma	BT
+P007501-297323	CNS embryonal	CNS embryonal tumour	BT
+P006004-299119	EPD	Ependymoma	BT
+P006302-298472	HGG	High grade glioma, hemispheric	BT
+P003607-299930	EPD	Ependymoma	BT
+P006104-300166	HGG	High grade glioma, right temporal	BT
+P007601-299312	DMG	DMG, H3 K27M (brainstem)	BT
+P002905-300886	HGG	High grade glioma, midline thalamic	BT
+P003005-301334	HGG	High grade glioma, midline brainstem	BT
+P007801-302111	HGG	High grade glioma, midline brainstem	BT
+P006304-303189	HGG	High grade glioma, midline brainstem	BT
+P007004-307759	MB	Medulloblastoma	BT
+P006904-307596	DMG	DMG, H3K27M (spinal cord)	BT
+P002103-307720	EPD	Ependymoma	BT
+P008401-309723	CNS embryonal	CNS embryonal tumour, ETMR	BT
+P007302-310096	EPD	Ependymoma	BT
+P007204-310190	EPD	Ependymoma	BT
+P002403-311178	DMG	DMG, H3 K27M (pineal)	BT
+P008501-310672	DMG	DMG, H3 K27M (mutant)	BT
+P002503-312569	HGG	High grade glioma, posterior fossa	BT
+P007604-313961	EPD	Ependymoma	BT
+P003305-314038	EPD	Ependymoma	BT
+P007702-314952	HGG	High grade glioma, hemispheric	BT
+P002603-315747	MB	Medulloblastoma	BT
+P006306-315860	EPD	Ependymoma	BT
+P007904-315725	MB	Medulloblastoma	BT
+P008104-316065	Glioma other	Glioma other, ganglioglioma	BT
+P003405-314812	Glioma other	Glioma other, low grade glioma	BT
+P009501-318828	HGG	High grade glioma, midline thalamic	BT
+P008404-319259	EPD	Ependymoma	BT
+P003605-320506	CNS other	CNS other, choroid plexus carcinoma	BT
+P008402-319950	HGG	High grade glioma, brainstem	BT
+P003007-319189	Glioma other	Glioma other, anaplastic pleomorphic xanthoastrocytoma	BT
+P008704-322509	Glioma other	Glioma other, low grade glioma	BT
+P002008-324543	CNS other	CNS other, high grade tumour	BT
+P003805-323909	CNS other	CNS other, choroid plexus carcinoma	BT
+P005207-325372	Glioma other	High grade glioma, cerebellar	BT
+P008802-324958	HGG	High grade glioma, midline corpus callosum	BT
+P002108-324549	DMG	DMG, H3 K27M (brainstem)	BT
+P008902-326246	DMG	DMG, H3 K27M (brainstem)	BT
+P009901-326428	Glioma other	Glioma other, desmoplastic infantile ganglioglioma	BT
+P010801-327086	CNS other	CNS other, pituitary adenoma	BT
+P009402-327673	HGG	High grade glioma, hemispheric	BT
+P010901-327451	Glioma other	Other, glioneuronal tumour	BT
+P011001-328135	DMG	DMG, H3 K27M (brainstem)	BT
+P011101-328978	DMG	DMG, H3 K27M (thalamus)	BT
+P003403-329580	CNS other	CNS other, pineoblastoma	BT
+P009404-330118	Rhabdoid ATRT	Atypical tetratoid rhabdoid tumour	BT
+P011301-329701	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P011601-330627	HGG	High grade glioma, hemispheric	BT
+P007204-331593	EPD	Ependymoma	BT
+P012101-331288	HGG	High grade glioma, hemispheric	BT
+P012301-331392	EPD	Ependymoma	BT
+P012501-331969	DMG	DMG, H3 K27M (brainstem)	BT
+P006101-333672	EPD	Ependymoma	BT
+P002508-334809	Rhabdoid ATRT	Atypical teratoid rhabdoid tumour	BT
+P006307-333730	HGG	High grade glioma, hemispheric	BT
+P013001-334940	MB	Medulloblastoma	BT
+P013201-335054	Glioma other	Pilomyxoid astrocytoma	BT
+P007606-334286	Glioma other	Glioma other, papillary glioneuronal tumour	BT
+P003607-334218	EPD	Ependymoma	BT
+P010304-337314	HGG	High grade glioma	BT
+P010502-338482	CNS embryonal	CNS embryonal tumour, ETMR	BT
+P010602-338650	DMG	DMG, H3K27M mutant (brainstem)	BT
+P009401-338576	HGG	High grade glioneuronal tumour	BT
+P010604-339036	CNS embryonal	CNS embryonal tumour	BT
+P010702-339760	MB	Medulloblastoma	BT
+P011004-339996	DMG	DMG, H3 K27M (brainstem)	BT
+P010902-340880	HGG	High grade glioma, hemispheric	BT
+P003703-341070	DMG	DMG, H3 K27M (brainstem)	BT
+P008606-341028	DMG	DMG, H3 K27M (brainstem)	BT
+P003208-342093	MB	Medulloblastoma	BT
+P008806-342154	DMG	DMG, H3 K27M (brainstem)	BT
+P011102-341752	HGG	High grade glioma, hemispheric	BT
+P014701-342615	HGG	High grade glioma, hemispheric	BT
+P003308-342968	MB	Medulloblastoma	BT
+P014401-341709	CNS other	Schwannoma	BT
+P011502-343972	CNS other	CNS other, germinomatous germ cell tumour	BT
+P011602-344079	Glioma other	Glioma other, low grade glioma	BT
+P004705-345028	EPD	Ependymoma	BT
+P008901-343035	CNS other	CNS other, meningioma	BT
+P011702-344883	HGG	High grade glioma, hemispheric	BT
+P009306-344558	CNS embryonal	CNS embryonal tumour, HGNET BCOR alteration	BT
+P015701-347055	HGG	High grade glioma, hemispheric	BT
+P004905-347989	HGG	High grade glioma, midline thalamic	BT
+P016101-348449	HGG	High grade glioma, hemispheric, H3K 27M	BT
+P007507-347991	MB	Medulloblastoma	BT
+P012102-349178	DMG	DMG, H3 K27M (brainstem)	BT
+P015901-347508	EPD	Ependymoma	BT
+P012004-350716	HGG	High grade glioma, hemispheric	BT
+P012202-349335	DMG	DMG, H3 K27M (thalamus)	BT
