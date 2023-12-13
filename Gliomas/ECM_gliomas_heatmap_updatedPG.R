@@ -1,4 +1,4 @@
-setwd("C:/Users/pgraber/OneDrive - Childrens Cancer Institute/Documents/workspace/Aim1.1_Bioinformatics_ECM/ECM_Proteins_zero/Gliomas/")
+setwd("/Users/work/Documents/workspace_local/Aim1.1_Heatmap_ECM_Bioinformatics_glioma/Gliomas/")
 library(readxl)
 library(gplots)
 library(ComplexHeatmap)
@@ -87,9 +87,11 @@ col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = Subtyp
 # dev.off()
 
 #####
+font_size <- 8
+
 pdf("heatmap_gliomas_top_30_cluster_scaled.pdf", height=11, width=10)
 Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = 5), cluster_rows = fh, 
+        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = fh, 
         cluster_columns = fh )
 dev.off()
 
@@ -125,7 +127,7 @@ col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = Subtyp
 
 pdf("heatmap_gliomas_top_30_ordered_scaled.pdf", height=11, width=10)
 Heatmap(as.matrix(log_scale), name = "logTPM", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = 5), cluster_rows = F, cluster_columns = fh )
+        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = F, cluster_columns = fh )
 dev.off()
 
 #######filtering low counts
@@ -223,7 +225,7 @@ col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = Subtyp
 #####
 pdf("heatmap_gliomas_top_30_cluster_filtered_scaled.pdf", height=11, width=10)
 Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = 5), cluster_rows = fh, 
+        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = fh, 
         cluster_columns = fh)
 dev.off()
 
@@ -256,7 +258,7 @@ col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = Subtyp
 
 pdf("heatmap_gliomas_top_30_ordered_fil_scaled.pdf", height=11, width=10)
 Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = 5), cluster_rows = F, cluster_columns = fh )
+        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = F, cluster_columns = fh )
 dev.off()
 
 write.table(data_tpm_avg_order, "ZERO_ECM_glioma_fil_genelist.txt", sep="\t", quote = F)
