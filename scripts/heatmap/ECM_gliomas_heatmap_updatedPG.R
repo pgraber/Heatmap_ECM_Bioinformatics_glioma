@@ -1,4 +1,7 @@
+# Set working directory
 setwd(here())
+
+# Load libraries
 library(readxl)
 library(gplots)
 library(ComplexHeatmap)
@@ -6,264 +9,143 @@ library(fastcluster)
 library(circlize)
 library(here)
 
-sheet_nam <- excel_sheets("data/heatmap/ZERO_ECMmarkers BT_patient_metadata.xlsx")
+# Define file paths
+excel_file <- here("data/heatmap/ZERO_ECMmarkers BT_patient_metadata.xlsx")
+counts_file <- here("data/heatmap/Zero_ECM_Markers_BT_counts.txt")
 
-##heatmap of all samples
+# Read sheet names
+sheet_nam <- excel_sheets(excel_file)
 
-data_ECM_Gliomas <- read_excel("data/heatmap/ZERO_ECMmarkers BT_patient_metadata.xlsx", sheet = "Gliomas")
-data_ECM_Gliomas <- data_ECM_Gliomas[-c(nrow(data_ECM_Gliomas),nrow(data_ECM_Gliomas)-1 ),]
-metadata <- data_ECM_Gliomas[,1:4]
-unique(metadata$Diagnosis)
+# Read Gliomas data
+data_ECM_Gliomas <- read_excel(excel_file, sheet = "Gliomas")
+data_ECM_Gliomas <- data_ECM_Gliomas[-c(nrow(data_ECM_Gliomas), nrow(data_ECM_Gliomas) - 1),]
+metadata <- data_ECM_Gliomas[, 1:4]
 
-
-data_tpm <- data_ECM_Gliomas[,c(1,5:ncol(data_ECM_Gliomas))]
+# Extract TPM data
+data_tpm <- data_ECM_Gliomas[, c(1, 5:ncol(data_ECM_Gliomas))]
 rownames(data_tpm) <- data_tpm$Patient.ID
 
-data_ECM_avg <- read_excel("data/heatmap/ZERO_ECMmarkers BT_patient_metadata.xlsx", sheet = "Gliomas Rank")
-data_tpm_avg <- data_tpm
-data_tpm_avg <- data_tpm_avg[,-1]
-data_tpm_avg <- as.data.frame(t(data_tpm_avg))
+# Read average data
+data_ECM_avg <- read_excel(excel_file, sheet = "Gliomas Rank")
+data_tpm_avg <- as.data.frame(t(data_tpm[, -1]))
 colnames(data_tpm_avg) <- data_tpm$Patient.ID
 data_tpm_avg$avg_exp <- rowMeans(data_tpm_avg)
 
+# Order data based on average expression
+data_tpm_avg_order <- data_tpm_avg[order(data_tpm_avg$avg_exp, decreasing = TRUE),]
+x <- nrow(data_tpm_avg_order) - 29
+data_tpm_avg_order_top <- data_tpm_avg_order[c(1:30, x:nrow(data_tpm_avg_order)),]
 
-data_tpm_avg_order <- data_tpm_avg[order(data_tpm_avg$avg_exp,decreasing = T),]
-x <- nrow(data_tpm_avg_order)-29
-data_tpm_avg_order_top <- data_tpm_avg_order[c(1:30,x:nrow(data_tpm_avg_order)),]
-
+# Extract relevant columns for TPM based on ordering
 index <- which(colnames(data_tpm) %in% rownames(data_tpm_avg_order_top))
-data_tpm_top <- data_tpm[,c(1,index)]
+data_tpm_top <- data_tpm[, c(1, index)]
 
-data_tpm_t <- t(data_tpm_top[,-1])
+# Transpose data
+data_tpm_t <- t(data_tpm_top[, -1])
 colnames(data_tpm_t) <- data_tpm$Patient.ID
 
-mat <- data_tpm_t
+# Handle zero values
+data_tpm_t[data_tpm_t == 0] <- 0.001
 
-mat[mat==0] <- 0.001
+# Create log-transformed TPM matrix
+logTPM <- log(as.matrix(data_tpm_t))
 
-tpm<-as.matrix(mat)
-
-logTPM <- log(tpm)
-
-###complex heatmap
-
-
-##scale the matrix before using Complexheatmap 
-#log_scale <- t(scale(t(logTPM)))
+# Scale the matrix before using Complexheatmap
 log_scale <- scale(logTPM)
 
-
+# Define color ramps and clustering function
 col_fun1 <- colorRamp2(c(-1, 0, 1), c("darkorange", "white", "deeppink"))
 col_fun2 <- colorRamp2(c(1, 5, 10), c("seagreen1", "royalblue", "orangered"))
+fh <- function(x) fastcluster::hclust(dist(x))
 
-fh = function(x) fastcluster::hclust(dist(x))
+# Define SubtypeCol colors
+SubtypeCol <- c("Glioma other" = "goldenrod", "HGG" = "darkgreen", "DMG" = "lightskyblue1")
 
-#"Glioma other" "HGG"          "DMG"  
-
-# SubtypeCol <- c("EWS" = "goldenrod", "NBL" = "darkgreen", "OST" ="lightskyblue1",
-#                 "RMS FN"= "purple", "RMS FP"=  "red")
-SubtypeCol <- c("Glioma other" = "goldenrod", "HGG" = "darkgreen", "DMG" ="lightskyblue1")
-
+# Match column names for metadata
 m <- match(colnames(log_scale), metadata$Patient.ID)
 metadata_order <- metadata[m,]
+metadata_order_1 <- as.data.frame(metadata_order[, 2])
 
-
-metadata_order_1 <- as.data.frame(metadata_order[,2])
-#col_at <- HeatmapAnnotation(df = KPT_aoc_log_1, col = list(AOC = col_fun2,Model  = colGrp ))
+# Define HeatmapAnnotation
 col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = SubtypeCol))
 
-
-
-
-
-###### 
-# png("heatmap_all_samples_diag_high_v1.png", height=800, width=900,res=100)
-# Heatmap(as.matrix(log_scale), name = "logTPM", show_row_names = F,show_column_names = F, 
-#         top_annotation = col_at  )
-# dev.off()
-# 
-# png("heatmap_all_samples_diag_high_v2.png", height=800, width=900,res=100)
-# Heatmap(as.matrix(log_scale), name = "logTPM", show_row_names = T,show_column_names = F, 
-#         top_annotation = col_at  )
-# dev.off()
-
-#####
+# Set font size
 font_size <- 8
 
-pdf("./output/heatmap/heatmap_gliomas_top_30_cluster_scaled.pdf", height=11, width=10)
-Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = fh, 
-        cluster_columns = fh )
-dev.off()
-
-
-
-####
-data_tpm_avg_order_top_1 <- data_tpm_avg_order_top[,-ncol(data_tpm_avg_order_top)]
-
-mat <- data_tpm_avg_order_top_1
-
-mat[mat==0] <- 0.001
-
-tpm<-as.matrix(mat)
-
-logTPM <- log(tpm)
-
-##scale the matrix before using Complexheatmap 
-#log_scale <- t(scale(t(logTPM)))
-log_scale <- scale(logTPM)
-
-
-
-#"Glioma other" "HGG"          "DMG"  
-SubtypeCol <- c("Glioma other" = "goldenrod", "HGG" = "darkgreen", "DMG" ="lightskyblue1")
-
-m <- match(colnames(log_scale), metadata$Patient.ID)
-metadata_order <- metadata[m,]
-
-
-metadata_order_1 <- as.data.frame(metadata_order[,2])
-#col_at <- HeatmapAnnotation(df = KPT_aoc_log_1, col = list(AOC = col_fun2,Model  = colGrp ))
-col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = SubtypeCol))
-
-pdf("output/heatmap/heatmap_gliomas_top_30_ordered_scaled.pdf", height=11, width=10)
-Heatmap(as.matrix(log_scale), name = "logTPM", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = F, cluster_columns = fh )
-dev.off()
-
-#######filtering low counts
-data_counts <- read.delim("./data/heatmap/Zero_ECM_Markers_BT_counts.txt",sep="\t", stringsAsFactors = F)
-library(edgeR)
-keep<-rowSums(cpm(data_counts[,3:ncol(data_counts)])>1)>=(0.5*ncol(data_counts[,3:ncol(data_counts)])+1)
-counts<-data_counts[keep,]
-counts_left <- data_counts[!keep,]
-
-data_ECM_Gliomas <- read_excel("./data/heatmap/ZERO_ECMmarkers BT_patient_metadata.xlsx", sheet = "Gliomas")
-data_ECM_Gliomas <- data_ECM_Gliomas[-c(nrow(data_ECM_Gliomas),nrow(data_ECM_Gliomas)-1 ),]
-
-index <- which(colnames(data_ECM_Gliomas) %in% counts$gene_id)
-data_ECM_Gliomas.1 <- data_ECM_Gliomas[,c(1:4,index)]
-
-data_tpm_out <- data_ECM_Gliomas[,-index]
-writeLines(colnames(data_tpm_out)[-c(1:4)],"./output/heatmap/filtered_geneList.txt")
-
-metadata <- data_ECM_Gliomas[,1:4]
-unique(metadata$Diagnosis)
-
-
-data_tpm <- data_ECM_Gliomas[,c(1,5:ncol(data_ECM_Gliomas))]
-rownames(data_tpm) <- data_tpm$Patient.ID
-
-#data_ECM_avg <- read_excel("ZERO_ECMmarkers BT_patient_metadata.xlsx", sheet = "Gliomas Rank")
-data_tpm_avg <- data_tpm
-data_tpm_avg <- data_tpm_avg[,-1]
-data_tpm_avg <- as.data.frame(t(data_tpm_avg))
-colnames(data_tpm_avg) <- data_tpm$Patient.ID
-data_tpm_avg$avg_exp <- rowMeans(data_tpm_avg)
-
-
-data_tpm_avg_order <- data_tpm_avg[order(data_tpm_avg$avg_exp,decreasing = T),]
-x <- nrow(data_tpm_avg_order)-29
-data_tpm_avg_order_top <- data_tpm_avg_order[c(1:30,x:nrow(data_tpm_avg_order)),]
-
-index <- which(colnames(data_tpm) %in% rownames(data_tpm_avg_order_top))
-data_tpm_top <- data_tpm[,c(1,index)]
-
-data_tpm_t <- t(data_tpm_top[,-1])
-colnames(data_tpm_t) <- data_tpm$Patient.ID
-
-mat <- data_tpm_t
-
-mat[mat==0] <- 0.001
-
-tpm<-as.matrix(mat)
-
-logTPM <- log(tpm)
-
-###complex heatmap
-
-
-##scale the matrix before using Complexheatmap 
-#log_scale <- t(scale(t(logTPM)))
-log_scale <- scale(logTPM)
-
-
-
-col_fun1 <- colorRamp2(c(-1, 0, 1), c("darkorange", "white", "deeppink"))
-col_fun2 <- colorRamp2(c(1, 5, 10), c("seagreen1", "royalblue", "orangered"))
-
-fh = function(x) fastcluster::hclust(dist(x))
-
-#"Glioma other" "HGG"          "DMG"  
-
-# SubtypeCol <- c("EWS" = "goldenrod", "NBL" = "darkgreen", "OST" ="lightskyblue1",
-#                 "RMS FN"= "purple", "RMS FP"=  "red")
-SubtypeCol <- c("Glioma other" = "goldenrod", "HGG" = "darkgreen", "DMG" ="lightskyblue1")
-
-m <- match(colnames(log_scale), metadata$Patient.ID)
-metadata_order <- metadata[m,]
-
-
-metadata_order_1 <- as.data.frame(metadata_order[,2])
-#col_at <- HeatmapAnnotation(df = KPT_aoc_log_1, col = list(AOC = col_fun2,Model  = colGrp ))
-col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = SubtypeCol))
-
-
-
-
-
-###### 
-# png("heatmap_all_samples_diag_high_v1.png", height=800, width=900,res=100)
-# Heatmap(as.matrix(log_scale), name = "logTPM", show_row_names = F,show_column_names = F, 
-#         top_annotation = col_at  )
-# dev.off()
-# 
-# png("heatmap_all_samples_diag_high_v2.png", height=800, width=900,res=100)
-# Heatmap(as.matrix(log_scale), name = "logTPM", show_row_names = T,show_column_names = F, 
-#         top_annotation = col_at  )
-# dev.off()
-
-#####
-pdf("output/heatmap/heatmap_gliomas_top_30_cluster_filtered_scaled.pdf", height=11, width=10)
-Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = fh, 
+# Create PDF output for clustered heatmap
+pdf("./output/heatmap/heatmap_gliomas_top_30_cluster_scaled.pdf", height = 11, width = 10)
+Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = TRUE, show_column_names = FALSE,
+        top_annotation = col_at, row_names_gp = gpar(fontsize = font_size), cluster_rows = fh,
         cluster_columns = fh)
 dev.off()
 
+# Save ordered data to file
+write.table(data_tpm_avg_order, "./output/heatmap/ZERO_ECM_glioma_fil_genelist.txt", sep = "\t", quote = FALSE)
 
-data_tpm_avg_order_top_1 <- data_tpm_avg_order_top[,-ncol(data_tpm_avg_order_top)]
+# Filtering low counts
+data_counts <- read.delim(counts_file, sep = "\t", stringsAsFactors = FALSE)
+library(edgeR)
 
-mat <- data_tpm_avg_order_top_1
+# Keep rows with counts greater than threshold
+keep <- rowSums(cpm(data_counts[, 3:ncol(data_counts)]) > 1) >= (0.5 * ncol(data_counts[, 3:ncol(data_counts)]) + 1)
+counts <- data_counts[keep, ]
+counts_left <- data_counts[!keep, ]
 
-mat[mat==0] <- 0.001
+# Read Gliomas data again
+data_ECM_Gliomas <- read_excel(excel_file, sheet = "Gliomas")
+data_ECM_Gliomas <- data_ECM_Gliomas[-c(nrow(data_ECM_Gliomas), nrow(data_ECM_Gliomas) - 1), ]
 
-tpm<-as.matrix(mat)
+# Extract relevant columns based on filtered counts
+index <- which(colnames(data_ECM_Gliomas) %in% counts$gene_id)
+data_ECM_Gliomas.1 <- data_ECM_Gliomas[, c(1:4, index)]
+
+# Write filtered gene list to a file
+data_tpm_out <- data_ECM_Gliomas[, -index]
+writeLines(colnames(data_tpm_out)[-c(1:4)], "./output/heatmap/filtered_geneList.txt")
+
+metadata <- data_ECM_Gliomas[, 1:4]
+
+# Extract TPM data again
+data_tpm <- data_ECM_Gliomas[, c(1, 5:ncol(data_ECM_Gliomas))]
+rownames(data_tpm) <- data_tpm$Patient.ID
+
+# Process average data again
+data_tpm_avg <- data_tpm
+data_tpm_avg <- data_tpm_avg[, -1]
+data_tpm_avg <- as.data.frame(t(data_tpm_avg))
+colnames(data_tpm_avg) <- data_tpm$Patient.ID
+data_tpm_avg$avg_exp <- rowMeans(data_tpm_avg)
+
+data_tpm_avg_order <- data_tpm_avg[order(data_tpm_avg$avg_exp, decreasing = TRUE), ]
+x <- nrow(data_tpm_avg_order) - 29
+data_tpm_avg_order_top <- data_tpm_avg_order[c(1:30, x:nrow(data_tpm_avg_order)), ]
+
+# Extract relevant columns for TPM based on ordering
+index <- which(colnames(data_tpm) %in% rownames(data_tpm_avg_order_top))
+data_tpm_top <- data_tpm[, c(1, index)]
+
+data_tpm_t <- t(data_tpm_top[, -1])
+colnames(data_tpm_t) <- data_tpm$Patient.ID
+
+mat <- data_tpm_t
+mat[mat == 0] <- 0.001
+tpm <- as.matrix(mat)
 
 logTPM <- log(tpm)
 
-##scale the matrix before using Complexheatmap 
-#log_scale <- t(scale(t(logTPM)))
+# Complex heatmap again
+
+## Scale the matrix before using Complexheatmap
 log_scale <- scale(logTPM)
 
-
-#"Glioma other" "HGG"          "DMG"  
-SubtypeCol <- c("Glioma other" = "goldenrod", "HGG" = "darkgreen", "DMG" ="lightskyblue1")
-
-m <- match(colnames(log_scale), metadata$Patient.ID)
-metadata_order <- metadata[m,]
-
-
-metadata_order_1 <- as.data.frame(metadata_order[,2])
-#col_at <- HeatmapAnnotation(df = KPT_aoc_log_1, col = list(AOC = col_fun2,Model  = colGrp ))
-col_at <- HeatmapAnnotation(df = metadata_order_1, col = list(Diagnosis = SubtypeCol))
-
-pdf("output/heatmap/heatmap_gliomas_top_30_ordered_fil_scaled.pdf", height=11, width=10)
-Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = T,show_column_names = F,
-        top_annotation = col_at , row_names_gp = gpar(fontsize = font_size), cluster_rows = F, cluster_columns = fh )
+pdf("./output/heatmap/heatmap_gliomas_top_30_cluster_filtered_scaled.pdf", height = 11, width = 10)
+Heatmap(as.matrix(log_scale), name = "z-scores", show_row_names = TRUE, show_column_names = FALSE,
+        top_annotation = col_at, row_names_gp = gpar(fontsize = font_size), cluster_rows = fh,
+        cluster_columns = fh)
 dev.off()
 
-write.table(data_tpm_avg_order, "./output/heatmap/ZERO_ECM_glioma_fil_genelist.txt", sep="\t", quote = F)
-
+# Save ordered data to file
+write.table(data_tpm_avg_order, "./output/heatmap/ZERO_ECM_glioma_fil_genelist.txt", sep = "\t", quote = FALSE)
 
 
 
