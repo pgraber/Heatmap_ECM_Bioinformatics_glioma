@@ -1,0 +1,237 @@
+---
+title: "ECM related Gene Expression ZERO and Jabado"
+toc: true
+format:
+  html:
+    code-fold: false
+    code-tools: true
+    self-contained: true
+execute: 
+  output: true
+  error: false
+  warning: false
+  echo: false
+---
+
+## Violin Plots of ECM related Genes
+
+```{r}
+library(tidyverse)
+library(here)
+library(ggpubr)
+library(ggsci)
+library(DT)
+library(patchwork)
+library(plotly)
+library(ggsci)
+library(wesanderson)
+library(ggsignif)
+library(ggsci)
+library(readxl)
+library(scales)
+library(DescTools)
+library(rstatix)
+library(knitr)
+library(scales)
+library(svglite)
+library(dunn.test)
+```
+
+```{r}
+# File path relative to the project directory
+# The full path is only needed since the project directory is at a different location because the R drive is too slow to run the project 
+
+file_path_ECM_proteins <- "R:/TBT/philipp_graber/raw_data/ECM_Proteins_zero/Bioinformatics Jeremie/Fibrous proteins' gene expression (3).xlsx"
+
+output_path <- here("output")
+
+# Read Excel file
+Fibrous_proteins_gene_expression <- read_excel(file_path_ECM_proteins, sheet = "All_tidy")
+```
+
+```{r}
+# Remove normal adult brain data 
+Fibrous_proteins_gene_expression <- Fibrous_proteins_gene_expression %>% 
+  filter(Subtype != "JABADO_NAB")
+
+Fibrous_proteins_gene_expression <- Fibrous_proteins_gene_expression %>%
+  rename(Gene_Expression = `Gene expression`)
+
+
+# Rearrange the levels of the "Subtype" variable
+Fibrous_proteins_gene_expression$Subtype <- factor(Fibrous_proteins_gene_expression$Subtype, levels=c("JABADO_NFB", "ZCC HGG", "ZCC MB", "ZCC EPD"), labels = c("NFB", "HGG", "MB", "EP"))
+
+# Create 3 different datasets filtered by Gene
+FN1_group <- Fibrous_proteins_gene_expression %>% 
+  filter(Gene == "FN1") %>% 
+  mutate(Gene_Expression = Gene_Expression + 1)
+
+LAMC1_group <- Fibrous_proteins_gene_expression %>% 
+  filter(Gene == "LAMC1") %>% 
+  mutate(Gene_Expression = Gene_Expression + 1)
+
+COL4A1_group <- Fibrous_proteins_gene_expression %>% 
+  filter(Gene == "COL4A1") %>% 
+  mutate(Gene_Expression = Gene_Expression + 1)
+
+```
+
+```{r}
+#| output: true
+
+create_violin_plot <- function(data, gene, subtype, title) {
+  p <- ggplot(data, aes(x = {{subtype}}, y = {{gene}}, fill = {{subtype}})) +
+    geom_violin(scale = "width", trim = FALSE, color = "black") +
+    geom_boxplot(width = 0.1, fill = "white", outlier.shape = NA) +
+    labs(title = title, x = NULL, y = "Expression level (log2 TPM + 1)") +
+    theme_pubr() +
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5),
+          axis.title.y = element_text(vjust = 3, size = 13)) +
+    scale_fill_manual(values = c("#FBB4AE", "#B3CDE3", "#CCEBC5", "#DECBE4"))  
+
+  return(p)
+}
+
+save_plot <- function(plot, filename, format, path = output_path, dpi = 300) {
+  file_path <- file.path(path, filename)
+  ggsave(file_path, plot, device = format, dpi = dpi)
+}
+
+# Create plots using the violin function and annotate significance level
+FN1_plot <- create_violin_plot(FN1_group, Gene_Expression, Subtype, "FN1") +
+    annotate("text", x = c(2, 3, 4), y = 2^(c(15.5, 14, 14.5)), label = c("***", "***", "***"), size = 6, vjust = 0) +
+    scale_y_continuous(trans = log2_trans(),
+                      breaks = 2^(c(0, 4, 8, 12, 16)),
+                      labels = parse(text = paste0(seq(0, 16, by = 4))))
+
+# Create plots 
+LAMC1_plot <- create_violin_plot(LAMC1_group, Gene_Expression, Subtype, "LAMC1") +
+  annotate("text", x = c(2, 3, 4), y = 2^(c(10, 9, 9)), label = c("***", "*", "***"), size = 6, vjust = 0) +
+  scale_y_continuous(trans = log2_trans(),
+                    breaks = 2^(c(0, 2, 4, 6, 8, 10)),
+                    labels = parse(text = paste0(seq(0, 10, by = 2))))
+
+
+COL4A1_plot <- create_violin_plot(COL4A1_group, Gene_Expression, Subtype, "COL4A1") +
+  annotate("text", x = c(2, 3, 4), y = 2^(c(14, 13.5, 12)), label = c("*", "*", "**"), size = 6, vjust = 0) +
+    scale_y_continuous(trans = log2_trans(),
+                    breaks = 2^(c(0, 4, 8, 12, 15.5)),
+                    labels = parse(text = paste0(seq(0, 16, by = 4))))
+
+FN1_plot
+LAMC1_plot
+COL4A1_plot
+
+
+# Save FN1_plot as JPEG with DPI of 300
+save_plot(FN1_plot, "FN1_plot.jpeg", "jpeg")
+
+# Save FN1_plot as SVG with DPI of 300
+save_plot(FN1_plot, "FN1_plot.svg", "svg")
+
+# Save LAMC1_plot as JPEG with DPI of 300
+save_plot(LAMC1_plot, "LAMC1_plot.jpeg", "jpeg")
+
+# Save LAMC1_plot as SVG with DPI of 300
+save_plot(LAMC1_plot, "LAMC1_plot.svg", "svg")
+
+# Save COL4A1_plot as JPEG with DPI of 300
+save_plot(COL4A1_plot, "COL4A1_plot.jpeg", "jpeg")
+
+# Save COL4A1_plot as SVG with DPI of 300
+save_plot(COL4A1_plot, "COL4A1_plot.svg", "svg")
+
+```
+
+## Check constant variance and normal distribution
+
+**FN1:**
+
+```{r}
+#| output: true
+# Check Residuals: 
+# - Constant variance (Check residual plots for fan shape)
+# - Normally distributed: (Q-Q plot straight line)
+
+# For FN1_group
+FN1_mod <- lm(Gene_Expression ~ Subtype, data=FN1_group)
+par(mfrow=c(1,2))
+plot(FN1_mod, which=c(1,2))
+
+```
+
+**COL4A1:**
+
+```{r}
+# For COL4A1_group
+COL4A1_mod <- lm(Gene_Expression ~ Subtype, data=COL4A1_group)
+par(mfrow=c(1,2))
+plot(COL4A1_mod, which=c(1,2))
+
+```
+
+**LAMC1**
+
+```{r}
+# For LAMC1_group
+LAMC1_mod <- lm(Gene_Expression ~ Subtype, data=LAMC1_group)
+par(mfrow=c(1,2))
+plot(LAMC1_mod, which=c(1,2))
+```
+
+## Hypothesis Testing (Kruskal-wallis)
+
+Data is not normally distributed. Therefore a non-parametric test will be performed (kruskal-wallis)
+
+```{r}
+#| output: true
+
+kruskal.test(Gene_Expression ~ Subtype, data = FN1_group) %>%
+  tidy() %>% 
+  kable(caption = "FN1")
+  
+
+kruskal.test(Gene_Expression ~ Subtype, data = LAMC1_group) %>% 
+  tidy() %>% 
+  kable(caption = "LAMC1")
+
+kruskal.test(Gene_Expression ~ Subtype, data = COL4A1_group) %>% 
+  tidy() %>% 
+  kable(caption = "COL4A1")
+
+
+```
+
+## Posthoc-test (Dunn with holm p-adjustment):
+
+```{r}
+#| output: false
+
+# Perform Dunn test
+# Try bonferroni 
+
+dunn_test_FN1 <- dunn.test(FN1_group$Gene_Expression, FN1_group$Subtype, method = "holm", altp = TRUE, list = TRUE)
+
+dunn_test_LAMC1 <- dunn.test(LAMC1_group$Gene_Expression, LAMC1_group$Subtype, method = "holm", altp = TRUE, list = TRUE, label = TRUE) 
+
+dunn_test_COL4A1 <- dunn.test(COL4A1_group$Gene_Expression, COL4A1_group$Subtype, method = "holm", altp = TRUE, list = TRUE, label = TRUE) 
+
+```
+
+```{r}
+
+# Output results of dunn test as table in markdown 
+dunn_test_FN1 %>% 
+  as_tibble() %>% 
+  kable(caption = "FN1")
+
+dunn_test_LAMC1 %>% 
+  as_tibble() %>% 
+  kable(caption = "LAMC1")
+
+dunn_test_COL4A1 %>% 
+  as_tibble() %>% 
+  kable(caption = "COL4A1")
+
+
+```

@@ -1,0 +1,146 @@
+---
+title: "ECM related Gene Expression ZERO and Jabado"
+toc: true
+format:
+  html:
+    code-fold: false
+    code-tools: true
+    self-contained: true
+execute: 
+  output: false
+  error: false
+  warning: false
+  echo: false
+project:
+  execute-dir: project
+---
+
+
+```{r, setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(readr)
+library(here)
+library(MatrisomeAnalyzeR)
+library(ComplexHeatmap)
+library(edgeR)
+
+opts_knit$set(root.dir = "C:/Users/pgraber/OneDrive - Childrens Cancer Institute/Documents/workspace/Aim1_Characterization_trumouroids")
+```
+
+
+```{r}
+TPM_counts <- read_tsv("data/ZERO_RNAseq/CNS_GeneExpression_TPM_Counts_total.txt")
+
+patient_metadata <- read_tsv("data/ZERO_data/CNS_PatientDiagnosis.txt")
+
+```
+
+
+```{r}
+head(TPM_counts) 
+head(patient_metadata)
+```
+
+```{r}
+# FIlter data to only include HGG and DMG
+unique(patient_metadata$diagnosis)
+
+glioma_filter <- c("HGG", "DMG")
+
+glioma_subset <- patient_metadata[patient_metadata$diagnosis %in% glioma_filter, ]
+
+```
+
+```{r}
+# Get unique patient IDs from the glioma subset and filter TPM matrix with unique patient IDs
+
+# Get unique patient IDs from the glioma subset
+unique_patient_ID <- unique(glioma_subset$rnaseq_id)
+
+# Create a vector of column names to keep
+columns_to_keep <- c("gene_id", "transcript_id-s-", unique_patient_ID)
+
+# Check which column names exist in the TPM_counts dataframe
+existing_columns <- colnames(TPM_counts)
+
+# Filter the columns to keep only the ones that exist in TPM_counts
+valid_columns <- columns_to_keep[columns_to_keep %in% existing_columns]
+
+# Filter the TPM_counts dataframe based on valid columns
+filtered_TPM_counts <- TPM_counts[, valid_columns, drop = FALSE]
+
+```
+
+
+```{r}
+# Annotate genes with MatrisomAnalyseR package
+
+TPM_ECM_annotated <- matriannotate(data = as.data.frame(filtered_TPM_counts), gene.column = "gene_id", species = "human")
+```
+
+```{r}
+# Create a logical vector indicating rows where "ColumnName" is NOT "Non-matrisome"
+logical_vector <- TPM_ECM_annotated$`Annotated Matrisome Division` == "Core matrisome"
+
+# Use the logical vector to subset the data frame
+core_matrisome <- TPM_ECM_annotated[logical_vector, ]
+
+
+# Create ECM overview plots 
+
+matribar(core_matrisome)
+
+
+```
+
+```{r}
+# Create a matrix excluding the first 4 columns and the first row
+expression_matrix <- as.matrix(core_matrisome[, -c(1:4)])
+  
+#colnames(expression_matrix) <- NULL
+```
+
+```{r}
+# Filter genes based on TPM values 
+threshold <- 1  
+keep <- rowSums(expression_matrix > threshold) >= (0.5 * ncol(expression_matrix) + 1)
+filtered_expression_matrix <- expression_matrix[keep, ]
+```
+
+```{r}
+
+filtered_expression_matrix[filtered_expression_matrix==0] <- 0.001
+
+log_matrix <- log(filtered_expression_matrix)
+
+log_scale <- scale(log_matrix)
+```
+
+```{r}
+# Create a Heatmap object
+heatmap_obj <- Heatmap(
+  log_scale,  # Your filtered and log-transformed expression matrix
+  name = "Expression",  # Name for the heatmap
+  #col = colorRamp2(c(-2, 0, 2), colors = c("blue", "white", "red")),  # Define colors
+  show_row_names = TRUE,  # Show gene names on the rows
+  show_column_names = TRUE,  # Show sample names on the columns
+  column_title = "Samples",  # Title for the columns
+  row_title = "Genes",  # Title for the rows
+  cluster_rows = TRUE,  # Cluster rows
+  cluster_columns = TRUE,  # Cluster columns
+  column_title_side = "bottom",  # Position of the column title
+  row_dend_side = "left",  # Position of the row dendrogram
+  column_dend_side = "top",  # Position of the column dendrogram
+  width = unit(10, "cm"),  # Adjust the width of the heatmap
+  height = unit(10, "cm")  # Adjust the height of the heatmap
+)
+
+# Draw the heatmap
+draw(heatmap_obj)
+
+```
+
+
+
+

@@ -1,0 +1,33 @@
+---
+title: "Differential expression analysis (St Jude Data)"
+toc: true
+format:
+  html:
+    code-fold: false
+    code-tools: true
+    self-contained: true
+execute: 
+  output: false
+  error: false
+  warning: false
+  echo: false
+project:
+  execute-dir: project
+---
+
+```{r, setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(readr)
+library(here)
+library(MatrisomeAnalyzeR)
+library(ComplexHeatmap)
+library(edgeR)
+
+opts_knit$set(root.dir = "C:/Users/pgraber/OneDrive - Childrens Cancer Institute/Documents/workspace/Aim1_Characterization_trumouroids")
+```
+
+```{r}
+
+```
+
