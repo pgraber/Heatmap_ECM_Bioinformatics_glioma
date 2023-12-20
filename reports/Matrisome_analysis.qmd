@@ -24,15 +24,16 @@ library(here)
 library(MatrisomeAnalyzeR)
 library(ComplexHeatmap)
 library(edgeR)
+library(ggpubr)
 
-opts_knit$set(root.dir = "C:/Users/pgraber/OneDrive - Childrens Cancer Institute/Documents/workspace/Aim1_Characterization_trumouroids")
+#opts_knit$set(root.dir = "C:/Users/pgraber/OneDrive - Childrens Cancer Institute/Documents/workspace/Aim1_Characterization_trumouroids")
 ```
 
 
 ```{r}
-TPM_counts <- read_tsv("data/ZERO_RNAseq/CNS_GeneExpression_TPM_Counts_total.txt")
+TPM_counts <- read_tsv(here("data/ZERO_RNAseq/CNS_GeneExpression_TPM_Counts_total.txt"))
 
-patient_metadata <- read_tsv("data/ZERO_data/CNS_PatientDiagnosis.txt")
+patient_metadata <- read_tsv(here("data/ZERO_RNAseq/CNS_PatientDiagnosis.txt"))
 
 ```
 
@@ -77,19 +78,68 @@ filtered_TPM_counts <- TPM_counts[, valid_columns, drop = FALSE]
 # Annotate genes with MatrisomAnalyseR package
 
 TPM_ECM_annotated <- matriannotate(data = as.data.frame(filtered_TPM_counts), gene.column = "gene_id", species = "human")
+matriring(TPM_ECM_annotated)
 ```
 
 ```{r}
-# Create a logical vector indicating rows where "ColumnName" is NOT "Non-matrisome"
-logical_vector <- TPM_ECM_annotated$`Annotated Matrisome Division` == "Core matrisome"
+# Count occurrences of each Matrisome Category and arrange by count
+category_counts <- matrisome %>%
+  group_by(`Annotated Matrisome Category`, `Annotated Matrisome Division`) %>%
+  summarise(Count = n()) %>%
+  arrange(`Annotated Matrisome Division`, (Count)) %>%
+  mutate(`Annotated Matrisome Category` = factor(`Annotated Matrisome Category`, levels = unique(.$`Annotated Matrisome Category`)))
 
-# Use the logical vector to subset the data frame
-core_matrisome <- TPM_ECM_annotated[logical_vector, ]
+matrisome_cleveland_dotplot <- ggplot(category_counts, aes(x = Count, y = `Annotated Matrisome Category`, fill = `Annotated Matrisome Division`)) +
+  geom_segment(
+    aes(x = 0, xend = Count, y = `Annotated Matrisome Category`, yend = `Annotated Matrisome Category`), 
+    color = "black", 
+    alpha = 1
+  ) +
+  geom_dotplot(
+    binaxis = "y", 
+    stackdir = "center", 
+    position = "dodge", 
+    dotsize = 1.5, 
+    color = "black"
+  ) +
+  geom_text(
+    aes(label = Count), 
+    vjust = -1,
+    hjust = -0.3,
+    size = 5, 
+    color = "black", 
+    show.legend = FALSE
+  ) +
+  labs(
+    title = "Distribution of Matrisome Category", 
+    x = "Counts", 
+    y = "Matrisome Category", 
+    fill = "Matrisome Division"
+  ) + expand_limits(x = c(0, max(category_counts$Count) * 1.22)) +  # Extend x-axis limits
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 16),
+    axis.text.x = element_text(size = 16),
+    legend.position = "right", 
+    panel.grid.major.y = element_line(color = "grey", linetype = "dashed"), 
+    panel.grid.minor.y = element_blank(), 
+    legend.title = element_text(size = 14), 
+    legend.text = element_text(size = 12)
+  )
+
+# Explicitly set the order of layers
+matrisome_cleveland_dotplot
 
 
-# Create ECM overview plots 
+```
+
+```{r}
+# Select only Core matrisome genes
+core_matrisome <- TPM_ECM_annotated %>%
+  filter(`Annotated Matrisome Division` == "Core matrisome")
 
 matribar(core_matrisome)
+matriring(core_matrisome)
 
 
 ```
@@ -97,8 +147,10 @@ matribar(core_matrisome)
 ```{r}
 # Create a matrix excluding the first 4 columns and the first row
 expression_matrix <- as.matrix(core_matrisome[, -c(1:4)])
-  
-#colnames(expression_matrix) <- NULL
+
+# Keep the gene names as row names
+gene_names <- core_matrisome$`Annotated Gene`
+rownames(expression_matrix) <- gene_names
 ```
 
 ```{r}
@@ -118,29 +170,59 @@ log_scale <- scale(log_matrix)
 ```
 
 ```{r}
+heatmap_obj <- Heatmap(
+  log_scale,
+  name = "Expression",
+  show_row_names = TRUE,
+  show_column_names = FALSE,
+  column_title = "Samples",
+  row_title = "Genes",
+  cluster_rows = TRUE,
+  cluster_columns = TRUE,
+  column_title_side = "bottom",
+  row_dend_side = "left",
+  column_dend_side = "top",
+  width = unit(10, "cm"),
+  height = unit(10, "cm")
+)
+
+draw(heatmap_obj)
+
+```
+
+
+```{r}
+# Identify top and bottom expressed genes
+top_genes <- head(rownames(log_matrix)[order(rowMeans(log_matrix, na.rm = TRUE), decreasing = TRUE)], 30)
+bottom_genes <- head(rownames(log_matrix)[order(rowMeans(log_matrix, na.rm = TRUE), decreasing = FALSE)], 30)
+
+# Subset the log_matrix to include only top and bottom genes
+selected_genes <- c(top_genes, bottom_genes)
+filtered_scaled_matrix <- log_scale[selected_genes, ]
+
+# Set row names to gene names
+rownames(filtered_scaled_matrix) <- selected_genes
+
 # Create a Heatmap object
 heatmap_obj <- Heatmap(
-  log_scale,  # Your filtered and log-transformed expression matrix
-  name = "Expression",  # Name for the heatmap
-  #col = colorRamp2(c(-2, 0, 2), colors = c("blue", "white", "red")),  # Define colors
-  show_row_names = TRUE,  # Show gene names on the rows
-  show_column_names = TRUE,  # Show sample names on the columns
-  column_title = "Samples",  # Title for the columns
-  row_title = "Genes",  # Title for the rows
-  cluster_rows = TRUE,  # Cluster rows
-  cluster_columns = TRUE,  # Cluster columns
-  column_title_side = "bottom",  # Position of the column title
-  row_dend_side = "left",  # Position of the row dendrogram
-  column_dend_side = "top",  # Position of the column dendrogram
-  width = unit(10, "cm"),  # Adjust the width of the heatmap
-  height = unit(10, "cm")  # Adjust the height of the heatmap
+  filtered_scaled_matrix,  
+  name = "z-scores",  
+  # col = colorRamp2(c(-2, 0, 2), colors = c("blue", "white", "red")),  # Define colors
+  show_row_names = TRUE,  
+  show_column_names = FALSE,  
+  cluster_rows = TRUE,  
+  cluster_columns = TRUE,  
+  column_title_side = "bottom",  
+  row_dend_side = "left",  
+  column_dend_side = "top", 
+  width = unit(10, "cm"),  
+  height = unit(10, "cm")  
 )
 
 # Draw the heatmap
 draw(heatmap_obj)
 
 ```
-
 
 
 
